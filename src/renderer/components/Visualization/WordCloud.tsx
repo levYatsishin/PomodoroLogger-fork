@@ -40,6 +40,7 @@ export const WordCloud: React.FC<MProps> = (props: MProps) => {
         }
         canvasEl.style.background = backgroundColor;
         WordCloud2(canvasEl, {
+            backgroundColor,
             list: weights,
             gridSize: Math.round((8 * width) / 800),
             weightFactor: (size: number) => {
@@ -51,7 +52,6 @@ export const WordCloud: React.FC<MProps> = (props: MProps) => {
             },
             rotateRatio: 0.5,
             rotationSteps: 2,
-            backgroundColor,
         });
     }, [weights, themeName, props.width, props.height]);
 

@@ -306,8 +306,8 @@ const OverviewCards = connect(
                 const onClick = () => setId(_id);
                 const onSettingClick = props.showConfigById
                     ? () => {
-                          props.showConfigById!(_id);
-                      }
+                        props.showConfigById!(_id);
+                    }
                     : undefined;
                 return (
                     <BoardBrief
