@@ -53,6 +53,7 @@ const ProgressTextContainer = styled.div`
     padding: 12px;
     text-align: center;
     transform: translateY(0.4em);
+    color: var(--pl-text);
 `;
 
 const TimerLayout = styled.div`
@@ -81,10 +82,10 @@ const MySider = styled.aside`
     position: relative;
     flex: 0 0 300px;
     padding: 6px;
-    border-right: 1px solid #dfdfdf;
-    background-color: #eaeaea;
+    border-right: 1px solid var(--pl-border);
+    background-color: var(--pl-surface-alt);
     float: left;
-    box-shadow: 2px 0 6px 0 rgba(234, 234, 234, 0.6);
+    box-shadow: 2px 0 6px 0 var(--pl-shadow);
     transition: margin-left 0.2s;
     ${tabMaxHeight}
 `;
@@ -106,7 +107,7 @@ const ButtonRow = styled.div`
     justify-content: space-around;
     font-size: 32px;
     margin: 0 auto 22px auto;
-    color: darkslategray;
+    color: var(--pl-text-muted);
 
     i {
         transition: transform 0.2s;
@@ -704,7 +705,7 @@ class Timer extends Component<Props, State> {
         if (minimize) {
             const name = boardId && this.props.kanban.boards[boardId]?.name;
             return (
-                <Layout style={{ backgroundColor: 'white' }} ref={this.selfRef}>
+                <Layout style={{ backgroundColor: 'var(--pl-bg)' }} ref={this.selfRef}>
                     <ReactHotkeys keyName={'f5,f6,tab'} onKeyDown={this.onKeyDown} />
                     <MiniLogger
                         clear={this.onClear}
@@ -734,7 +735,7 @@ class Timer extends Component<Props, State> {
             boardId !== undefined ? this.props.kanban.boards[boardId].focusedList : undefined;
 
         return (
-            <Layout style={{ backgroundColor: 'white' }} ref={this.selfRef}>
+            <Layout style={{ backgroundColor: 'var(--pl-bg)' }} ref={this.selfRef}>
                 <ReactHotkeys keyName={'f5,f6,tab'} onKeyDown={this.onKeyDown} />
                 <TimerMask
                     extendCurrentSession={this.extendCurrentSession}
@@ -766,7 +767,7 @@ class Timer extends Component<Props, State> {
                                 top: 20,
                                 marginRight: -15,
                                 zIndex: 50,
-                                boxShadow: '4px 0 6px -1px rgba(234, 234, 234, 0.6)',
+                                boxShadow: '4px 0 6px -1px var(--pl-shadow)',
                             }}
                             onClick={this.switchSider}
                         />
@@ -798,14 +799,13 @@ class Timer extends Component<Props, State> {
                         <ProgressContainer>
                             <Progress
                                 type="circle"
-                                strokeColor={{
-                                    '0%': '#108ee9',
-                                    '100%': '#87d068',
-                                }}
+                                strokeColor={'var(--pl-accent)'}
+                                trailColor={'var(--pl-border-strong)'}
                                 percent={percent}
                                 width={300}
                                 style={{
                                     margin: '0 auto',
+                                    filter: 'drop-shadow(0 0 12px rgba(0,0,0,0.25))',
                                 }}
                             >
                                 <ProgressTextContainer>
@@ -898,16 +898,20 @@ class Timer extends Component<Props, State> {
                             <MoreInfo>
                                 <h2>Time Spent</h2>
                                 <PomodoroDualPieChart
+                                    key={`pie-${this.props.timer.theme}`}
                                     pomodoros={this.state.pomodorosToday}
                                     width={800}
+                                    themeName={this.props.timer.theme}
                                 />
                                 <Divider />
 
                                 <h2>Word Cloud</h2>
                                 <AsyncWordCloud
+                                    key={`wc-${this.props.timer.theme}`}
                                     records={this.state.pomodorosToday}
                                     width={800}
                                     height={400}
+                                    themeName={this.props.timer.theme}
                                     style={{ margin: '0 auto' }}
                                 />
                             </MoreInfo>

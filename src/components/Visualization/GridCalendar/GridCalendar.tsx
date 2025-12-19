@@ -1,11 +1,23 @@
 import React from 'react';
 import styled from 'styled-components';
 
+const getCssVar = (name: string, fallback: string) => {
+    if (typeof document === 'undefined') {
+        return fallback;
+    }
+    const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    return v || fallback;
+};
+
 const Container = styled.div`
     position: relative;
     display: flex;
     justify-content: center;
     transition: all 0.4s;
+    background: var(--pl-card-bg);
+    border-radius: 6px;
+    padding: 6px 10px;
+    margin-top: 10px;
     g,
     rect {
         transition: all 0.4s;
@@ -18,7 +30,7 @@ const SvgContainer = styled.div`
 `;
 
 const SvgText = styled.text`
-    fill: #444;
+    fill: var(--pl-text-muted);
     font-weight: 300;
 `;
 
@@ -60,6 +72,7 @@ interface Props {
     till?: string | number;
     shownWeeks?: number;
     clickDate?: (year: number, month: number, day: number) => void;
+    themeName?: string;
 }
 
 function getLastDayTimestamp(date: Date | string | number) {
@@ -107,11 +120,10 @@ export const GridCalendar = React.memo((props: Props) => {
     const tillTimestamp = getLastDayTimestamp(till);
     const day = (new Date(till).getDay() + 1) % 7;
     const shownGrids = (day === 0 ? 7 : day) + (shownWeeks - 1) * 7;
-    const grids = React.useMemo(() => getGridData(data, tillTimestamp, shownGrids), [
-        tillTimestamp,
-        data,
-        shownGrids,
-    ]);
+    const grids = React.useMemo(
+        () => getGridData(data, tillTimestamp, shownGrids),
+        [tillTimestamp, data, shownGrids, props.themeName]
+    );
     const maxCountInADay = Math.max(5, Math.max(...grids.map((v) => v.count)));
     const axisMargin = 32;
     const innerWidth = width - axisMargin;
@@ -135,12 +147,18 @@ export const GridCalendar = React.memo((props: Props) => {
             maxWidth - 220
         );
     }
+    const isDark = props.themeName === 'dark';
+    const textColor = getCssVar('--pl-text', isDark ? '#D4BE98' : '#1f1f1f');
+    const cardBg = getCssVar('--pl-card-bg', isDark ? '#282828' : '#ffffff');
+    const accent = getCssVar('--pl-accent', '#7DAEA3');
+    const subtle = getCssVar('--pl-text-subtle', isDark ? '#665C54' : '#999');
+    const emptyColor = isDark ? '#32302F' : '#f2f2f2';
     const Tooltip = (
         <div
             style={{
-                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                backgroundColor: cardBg,
                 wordBreak: 'keep-all',
-                color: 'white',
+                color: textColor,
                 position: 'absolute',
                 transition: 'all 0.1s',
                 left: tooltipPositionLeft,
@@ -148,6 +166,7 @@ export const GridCalendar = React.memo((props: Props) => {
                 top: toolTipTop,
                 padding: '8px 8px',
                 borderRadius: 4,
+                border: `1px solid ${subtle}`,
                 zIndex: 10,
                 overflow: 'hidden',
                 textOverflow: 'clip',
@@ -177,11 +196,13 @@ export const GridCalendar = React.memo((props: Props) => {
                 height={gridHeight}
                 x={v.week * (gridWidth + gridMargin)}
                 y={v.day * (gridWidth + gridMargin)}
-                fill={`hsl(50, ${v.count === 0 ? '0%' : '60%'}, ${
-                    92 - (v.count / maxCountInADay) * 70
-                }%`}
+                fill={
+                    v.count === 0
+                        ? emptyColor
+                        : `hsl(40, 60%, ${78 - (v.count / maxCountInADay) * 38}%)`
+                }
                 key={index}
-                stroke={chosen ? 'rgb(200, 180, 240)' : ''}
+                stroke={chosen ? accent : ''}
                 onMouseEnter={onEnter}
                 onMouseLeave={() => index === chosenIndex && setChosenIndex(undefined)}
                 onClick={onClick}
@@ -192,12 +213,10 @@ export const GridCalendar = React.memo((props: Props) => {
         );
     };
 
-    let rects = React.useMemo(() => grids.map((v, index) => createRect(v, index, false)), [
-        grids,
-        gridWidth,
-        gridMargin,
-        gridHeight,
-    ]);
+    let rects = React.useMemo(
+        () => grids.map((v, index) => createRect(v, index, false)),
+        [grids, gridWidth, gridMargin, gridHeight, props.themeName]
+    );
     if (chosenIndex != null) {
         rects = rects.concat();
         rects[chosenIndex] = createRect(grids[chosenIndex], chosenIndex, true);

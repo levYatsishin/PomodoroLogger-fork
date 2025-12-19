@@ -23,22 +23,30 @@ const ButtonWrapper = styled.div`
 `;
 
 const Footer = styled.footer`
-    border-top: 1px solid rgb(240, 240, 240);
+    border-top: 1px solid var(--pl-border);
     padding: 0.6rem 0;
     position: relative;
     margin: 0.8rem auto;
     width: 100%;
     text-align: center;
+    color: var(--pl-text);
+    background: var(--pl-surface);
 `;
 
 const StyledIcon = styled(Icon)`
     font-size: 1.25rem;
-    color: black;
+    color: var(--pl-text);
     transition: color 0.1s;
     margin: 0 0.3rem;
     :hover {
-        color: rgb(87, 80, 89);
+        color: var(--pl-text-muted);
     }
+`;
+
+const SettingLabel = styled.span`
+    font-weight: 500;
+    font-size: 14px;
+    color: var(--pl-text);
 `;
 
 const marks = {
@@ -68,6 +76,7 @@ const settingUiStates = [
     'useHardwareAcceleration',
     'startOnBoot',
     'distractingList',
+    'theme',
 ];
 
 interface Props extends TimerState, TimerActionTypes {}
@@ -133,6 +142,10 @@ export const Setting: React.FunctionComponent<Props> = React.memo(
             });
         }, []);
 
+        const setTheme = useCallback((v: boolean) => {
+            props.setTheme(v ? 'dark' : 'light');
+        }, []);
+
         const onDeleteData = useCallback(() => {
             deleteAllUserData().then(() => {
                 message.info('All user data is removed. Pomodoro needs to restart.');
@@ -196,9 +209,7 @@ export const Setting: React.FunctionComponent<Props> = React.memo(
                         </SliderContainer>
                     </Col>
                 </Row>
-                <span style={{ fontWeight: 500, fontSize: 14, color: 'rgba(0, 0, 0, 0.85)' }}>
-                    Hardware Acceleration
-                </span>
+                <SettingLabel>Hardware Acceleration</SettingLabel>
                 <Switch
                     onChange={setUseHardwareAcceleration}
                     checked={props.useHardwareAcceleration}
@@ -206,18 +217,14 @@ export const Setting: React.FunctionComponent<Props> = React.memo(
                 />
                 <br />
 
-                <span style={{ fontWeight: 500, fontSize: 14, color: 'rgba(0, 0, 0, 0.85)' }}>
-                    Start On Boot
-                </span>
+                <SettingLabel>Start On Boot</SettingLabel>
                 <Switch
                     onChange={setStartOnBoot}
                     checked={props.startOnBoot}
                     style={{ margin: 8 }}
                 />
                 <br />
-                <span style={{ fontWeight: 500, fontSize: 14, color: 'rgba(0, 0, 0, 0.85' }}>
-                    Auto Update
-                </span>
+                <SettingLabel>Auto Update</SettingLabel>
                 <Switch
                     onChange={switchAutoUpdate}
                     checked={props.autoUpdate}
@@ -225,12 +232,18 @@ export const Setting: React.FunctionComponent<Props> = React.memo(
                 />
                 <br />
 
-                <span style={{ fontWeight: 500, fontSize: 14, color: 'rgba(0, 0, 0, 0.85' }}>
-                    Screenshot
-                </span>
+                <SettingLabel>Screenshot</SettingLabel>
                 <Switch
                     onChange={switchScreenshot}
                     checked={!!props.screenShotInterval}
+                    style={{ margin: 8 }}
+                />
+                <br />
+
+                <SettingLabel>Dark Theme</SettingLabel>
+                <Switch
+                    onChange={setTheme}
+                    checked={props.theme === 'dark'}
                     style={{ margin: 8 }}
                 />
 

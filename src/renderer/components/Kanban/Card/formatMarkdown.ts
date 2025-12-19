@@ -7,8 +7,8 @@ export interface MarkdownContext {
 
 const defaultContext = {
     stringColorMap: () => ({
-        background: '#98989869',
-        color: '#222',
+        background: 'rgba(102, 92, 84, 0.45)',
+        color: '#D4BE98',
     }),
 };
 

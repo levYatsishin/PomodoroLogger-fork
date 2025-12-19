@@ -5,6 +5,16 @@ import styled, { keyframes } from 'styled-components';
 import { to2digits } from '../../utils';
 import shortid from 'shortid';
 
+const getCssVar = (name: string, fallback: string) => {
+    if (typeof document === 'undefined') {
+        return fallback;
+    }
+    const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    return v || fallback;
+};
+
+const defaultDotColor = 'red';
+
 const SvgDot = styled.svg`
     transition: transform 0.1s cubic-bezier(0.17, 0.67, 0.96, 0.59);
     :hover {
@@ -114,7 +124,7 @@ export class PomodoroNumView extends React.PureComponent<Props> {
         isNew: boolean = false,
         isRunning: boolean = false
     ) => {
-        const { color = 'red', animation = false } = this.props;
+        const { color = defaultDotColor, animation = false } = this.props;
         const { transform } = this.state;
         let Svg = isNew ? AnimeSvgDot : SvgDot;
         const n = this.props.pomodoros.length;

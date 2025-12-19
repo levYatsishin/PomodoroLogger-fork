@@ -27,15 +27,15 @@ const Content = styled.main`
     ::-webkit-scrollbar {
         width: 8px;
         height: 8px;
-        background-color: #f5f5f5;
+        background-color: var(--pl-scrollbar-track);
     }
     ::-webkit-scrollbar-thumb {
         border-radius: 8px;
-        background-color: rgba(50, 50, 50, 0.3);
+        background-color: var(--pl-scrollbar-thumb);
     }
     ::-webkit-scrollbar-track {
         border-radius: 8px;
-        background-color: rgba(200, 200, 200, 0.5);
+        background-color: transparent;
     }
 `;
 

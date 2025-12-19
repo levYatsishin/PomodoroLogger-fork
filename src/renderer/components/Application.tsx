@@ -5,10 +5,11 @@ import * as React from 'react';
 import ReactHotkeys from 'react-hot-keys';
 import { hot } from 'react-hot-loader/root';
 import { connect } from 'react-redux';
-import styled from 'styled-components';
+import styled, { ThemeProvider } from 'styled-components';
 import { IpcEventName } from '../../main/ipc/type';
 import { loadDBs } from '../dbs';
 import { RootState } from '../reducers';
+import { GlobalStyle, themes } from '../style/theme';
 import { genMapDispatchToProp } from '../utils';
 import { DestroyOnTimeoutWrapper } from './DestroyOnTimeoutWrapper';
 import History from './History';
@@ -52,6 +53,7 @@ const { TabPane } = Tabs;
 interface Props extends TimerActionTypes, HistoryActionCreatorTypes {
     currentTab: string;
     minimize: boolean;
+    theme: keyof typeof themes;
 
     fetchKanban: () => void;
 }
@@ -110,90 +112,102 @@ class Application extends React.Component<Props> {
     }
 
     render() {
-        const { currentTab, changeAppTab, minimize } = this.props;
+        const { currentTab, changeAppTab, minimize, theme } = this.props;
         return (
-            <Main minimize={minimize}>
-                <Tabs activeKey={minimize ? 'timer' : currentTab} onChange={changeAppTab as any}>
-                    <TabPane
-                        tab={
-                            <span>
-                                <Icon type="clock-circle" />
-                                Pomodoro
-                            </span>
-                        }
-                        forceRender={true}
-                        key="timer"
-                    >
-                        {this.timer}
-                    </TabPane>
-
-                    <TabPane
-                        tab={
-                            <span>
-                                <Icon type="project" />
-                                Kanban
-                            </span>
-                        }
-                        forceRender={false}
-                        key="kanban"
-                    >
-                        <DestroyOnTimeoutWrapper
-                            isVisible={currentTab === 'kanban'}
-                            timeout={600000}
+            <ThemeProvider theme={themes[theme] || themes.light}>
+                <>
+                    <GlobalStyle />
+                    <Main minimize={minimize}>
+                        <Tabs
+                            activeKey={minimize ? 'timer' : currentTab}
+                            onChange={changeAppTab as any}
                         >
-                            <Kanban />
-                        </DestroyOnTimeoutWrapper>
-                    </TabPane>
+                            <TabPane
+                                tab={
+                                    <span>
+                                        <Icon type="clock-circle" />
+                                        Pomodoro
+                                    </span>
+                                }
+                                forceRender={true}
+                                key="timer"
+                            >
+                                {this.timer}
+                            </TabPane>
 
-                    <TabPane
-                        tab={
-                            <span>
-                                <Icon type="history" />
-                                History
-                            </span>
-                        }
-                        forceRender={false}
-                        key="history"
-                    >
-                        <DestroyOnTimeoutWrapper
-                            isVisible={currentTab === 'history'}
-                            timeout={600000}
-                        >
-                            <History />
-                        </DestroyOnTimeoutWrapper>
-                    </TabPane>
+                            <TabPane
+                                tab={
+                                    <span>
+                                        <Icon type="project" />
+                                        Kanban
+                                    </span>
+                                }
+                                forceRender={false}
+                                key="kanban"
+                            >
+                                <DestroyOnTimeoutWrapper
+                                    isVisible={currentTab === 'kanban'}
+                                    timeout={600000}
+                                >
+                                    <Kanban />
+                                </DestroyOnTimeoutWrapper>
+                            </TabPane>
 
-                    <TabPane
-                        tab={
-                            <span>
-                                <Icon type="setting" />
-                                Setting
-                            </span>
-                        }
-                        key="setting"
-                    >
-                        <Setting />
-                    </TabPane>
-                </Tabs>
-                {!minimize && (
-                    <>
-                        <UserGuide />
-                        <UpdateController />
-                        <CardInDetail />
-                        <ConnectedPomodoroSankey />
-                    </>
-                )}
-                <ReactHotkeys
-                    keyName={'ctrl+tab,ctrl+shift+tab,ctrl+f12,ctrl+q,f11,f12'}
-                    onKeyDown={this.onKeyDown}
-                />
-            </Main>
+                            <TabPane
+                                tab={
+                                    <span>
+                                        <Icon type="history" />
+                                        History
+                                    </span>
+                                }
+                                forceRender={false}
+                                key="history"
+                            >
+                                <DestroyOnTimeoutWrapper
+                                    isVisible={currentTab === 'history'}
+                                    timeout={600000}
+                                >
+                                    <History key={`history-${theme}`} />
+                                </DestroyOnTimeoutWrapper>
+                            </TabPane>
+
+                            <TabPane
+                                tab={
+                                    <span>
+                                        <Icon type="setting" />
+                                        Setting
+                                    </span>
+                                }
+                                key="setting"
+                            >
+                                <Setting />
+                            </TabPane>
+                        </Tabs>
+                        {!minimize && (
+                            <>
+                                <UserGuide />
+                                <UpdateController />
+                                <CardInDetail />
+                                <ConnectedPomodoroSankey />
+                            </>
+                        )}
+                        <ReactHotkeys
+                            keyName={'ctrl+tab,ctrl+shift+tab,ctrl+f12,ctrl+q,f11,f12'}
+                            onKeyDown={this.onKeyDown}
+                        />
+                    </Main>
+                </>
+            </ThemeProvider>
         );
     }
 }
 
 const ApplicationContainer = connect(
-    (state: RootState) => ({ currentTab: state.timer.currentTab, minimize: state.timer.minimize }),
+    (state: RootState) => ({
+        currentTab: state.timer.currentTab,
+        minimize: state.timer.minimize,
+        theme: state.timer.theme,
+    }),
     genMapDispatchToProp<TimerActionTypes & HistoryActionCreatorTypes>({
         ...timerActions,
         ...historyActions,

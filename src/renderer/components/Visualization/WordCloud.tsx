@@ -5,24 +5,41 @@ import { PomodoroRecord } from '../../monitor/type';
 import { workers } from '../../workers';
 import { Loading } from '../utils/Loading';
 import { Card } from '../Kanban/type';
+import { ThemeName } from '../../style/theme';
 
 const tokenizer = workers.tokenizer;
 
 interface Props {
     weights: [string, number][];
+    themeName?: ThemeName;
 }
 
 type MProps = Props & { [other: string]: any };
 export const WordCloud: React.FC<MProps> = (props: MProps) => {
     const canvas = React.useRef<HTMLCanvasElement>();
-    const { weights, ...restProps } = props;
+    const { weights, themeName, ...restProps } = props;
     React.useEffect(() => {
         if (canvas.current === undefined || props.weights.length === 0) {
             return;
         }
 
-        const width = canvas.current.clientWidth || props.width || 800;
-        WordCloud2(canvas.current, {
+        const canvasEl = canvas.current;
+        const width = props.width || canvasEl.clientWidth || 800;
+        const height = props.height || canvasEl.clientHeight || Math.floor(width * 0.6);
+        canvasEl.width = width;
+        canvasEl.height = height;
+        const cssBg = getComputedStyle(document.documentElement)
+            .getPropertyValue('--pl-card-bg')
+            .trim();
+        const backgroundColor =
+            cssBg && cssBg.length > 0 ? cssBg : themeName === 'dark' ? '#282828' : '#ffffff';
+        const ctx = canvasEl.getContext('2d');
+        if (ctx) {
+            ctx.fillStyle = backgroundColor;
+            ctx.fillRect(0, 0, canvasEl.width, canvasEl.height);
+        }
+        canvasEl.style.background = backgroundColor;
+        WordCloud2(canvasEl, {
             list: weights,
             gridSize: Math.round((8 * width) / 800),
             weightFactor: (size: number) => {
@@ -34,9 +51,9 @@ export const WordCloud: React.FC<MProps> = (props: MProps) => {
             },
             rotateRatio: 0.5,
             rotationSteps: 2,
-            backgroundColor: 'white',
+            backgroundColor,
         });
-    }, [weights]);
+    }, [weights, themeName, props.width, props.height]);
 
     // @ts-ignore
     return <canvas ref={canvas} {...restProps} />;
@@ -45,6 +62,7 @@ export const WordCloud: React.FC<MProps> = (props: MProps) => {
 interface AsyncProps {
     records: PomodoroRecord[];
     cards?: Card[];
+    themeName?: ThemeName;
 }
 
 type MAsyncProps = AsyncProps & { [name: string]: any };

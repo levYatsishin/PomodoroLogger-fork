@@ -24,7 +24,7 @@ const CardContainer = styled.div`
     position: relative;
     width: 262px;
     word-break: break-word;
-    background-color: white;
+    background-color: var(--pl-card-bg);
     margin: 8px 4px 0 4px;
     border-radius: 6px;
     cursor: grab;

@@ -25,7 +25,7 @@ const BriefCard = styled.div`
     position: relative;
     display: inline-block;
     padding: 6px;
-    background-color: white;
+    background-color: var(--pl-card-bg);
     margin: 6px;
     border-radius: 6px;
     width: 260px;
@@ -34,7 +34,7 @@ const BriefCard = styled.div`
     transition: box-shadow 0.5s, transform 0.5s;
 
     :hover {
-        box-shadow: 2px 2px 4px 4px rgba(0, 0, 0, 0.14);
+        box-shadow: 2px 2px 6px 4px rgba(0, 0, 0, 0.22);
         transform: translate(-3px -3px);
         z-index: 100;
     }
@@ -67,12 +67,16 @@ const AnimTrend = styled.div`
         animation: ${clipAnimation} 3s linear infinite;
         animation-delay: 0.4s;
         clip-path: inset(100%);
+        path {
+            stroke: var(--pl-accent);
+        }
     }
 `;
 
 const Content = styled.div`
     position: relative;
     padding: 0 8px;
+    color: var(--pl-text);
 `;
 
 const Header = styled.div`
@@ -212,10 +216,10 @@ const _BoardBrief: React.FC<Props> = React.memo((props: Props) => {
                     {name}
                     <Pin
                         isPin={!!props.pin}
-                        onClick={useCallback(() => props.setPin(!props.pin), [
-                            props._id,
-                            props.pin,
-                        ])}
+                        onClick={useCallback(
+                            () => props.setPin(!props.pin),
+                            [props._id, props.pin]
+                        )}
                         isHover={hover}
                         style={{ marginLeft: 4 }}
                     />

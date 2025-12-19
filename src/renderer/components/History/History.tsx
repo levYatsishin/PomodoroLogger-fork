@@ -59,6 +59,7 @@ interface Props extends HistoryActionCreatorTypes, HistoryState {
     boards: KanbanBoardState;
     chooseRecord: (r: PomodoroRecord) => void;
     getCardsByBoardId: (boardId: string | undefined) => CardState[];
+    themeName?: string;
 }
 
 export const History: React.FunctionComponent<Props> = React.memo((props: Props) => {
@@ -231,11 +232,13 @@ export const History: React.FunctionComponent<Props> = React.memo((props: Props)
                 </Row>
                 {aggInfo.pieChart != null && aggInfo.wordWeights != null ? (
                     calendarWidth > 670 ? (
-                        <ChartContainer>
+                        <ChartContainer key={`charts-${props.themeName}-${calendarWidth}`}>
                             <GridCalendar
+                                key={props.themeName}
                                 data={aggInfo.calendarCount}
                                 width={calendarWidth}
                                 clickDate={clickDate}
+                                themeName={props.themeName}
                             />
                             <div
                                 className={
@@ -247,7 +250,7 @@ export const History: React.FunctionComponent<Props> = React.memo((props: Props)
                                 <span
                                     style={{
                                         fontSize: 14,
-                                        color: '#7f7f7f',
+                                        color: 'var(--pl-text-muted)',
                                         margin: '0 5px',
                                         display: 'inline-block',
                                     }}
@@ -264,14 +267,18 @@ export const History: React.FunctionComponent<Props> = React.memo((props: Props)
                                 />
                             </div>
                             <DualPieChart
+                                key={props.themeName}
                                 {...aggInfo.pieChart}
                                 width={calendarWidth}
                                 onProjectClick={onProjectClick}
+                                themeName={props.themeName}
                             />
                             <WordCloud
+                                key={props.themeName}
                                 weights={aggInfo.wordWeights}
                                 width={calendarWidth}
                                 height={calendarWidth * 0.6}
+                                themeName={props.themeName}
                             />
                         </ChartContainer>
                     ) : undefined

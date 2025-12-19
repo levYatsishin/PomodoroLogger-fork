@@ -21,7 +21,7 @@ const FullscreenStyled = styled.div`
     left: 0;
     top: 0;
     overflow: auto;
-    background-color: rgba(255, 255, 255, 0.98);
+    background-color: var(--pl-overlay);
     width: 100%;
     height: 100vh;
     ${fatScrollBar}
@@ -47,11 +47,11 @@ const Header = styled.div`
     }
 
     h4 {
-        color: #7f7f7f;
+        color: var(--pl-text-subtle);
     }
 
     h5 {
-        color: #7f7f7f;
+        color: var(--pl-text-subtle);
         font-size: 10px;
     }
 `;
@@ -63,6 +63,7 @@ interface Props {
     showSwitch: boolean;
     width?: number;
     cancel?: () => void;
+    themeName?: string;
 }
 
 const breakWord = (key: string, breaker: string = '\n', maxLength: number = 40): string => {
@@ -242,6 +243,21 @@ const getLinkAndNode = (
 
 const getOption = (props: Props): EChartOption => {
     const data = getLinkAndNode(props.record!, props.efficiencyAnalyser, props.showSwitch);
+    const textColor =
+        typeof document === 'undefined'
+            ? '#1f1f1f'
+            : getComputedStyle(document.documentElement).getPropertyValue('--pl-text').trim() ||
+              '#1f1f1f';
+    const cardBg =
+        typeof document === 'undefined'
+            ? '#ffffff'
+            : getComputedStyle(document.documentElement).getPropertyValue('--pl-card-bg').trim() ||
+              '#ffffff';
+    const border =
+        typeof document === 'undefined'
+            ? '#c7c7c7'
+            : getComputedStyle(document.documentElement).getPropertyValue('--pl-border').trim() ||
+              '#c7c7c7';
     return {
         title: {
             text: '',
@@ -249,6 +265,9 @@ const getOption = (props: Props): EChartOption => {
         tooltip: {
             trigger: 'item',
             triggerOn: 'mousemove',
+            textStyle: { color: textColor },
+            backgroundColor: cardBg,
+            borderColor: border,
         },
         series: [
             {
@@ -297,7 +316,7 @@ const getOption = (props: Props): EChartOption => {
                 label: {
                     normal: {
                         textStyle: {
-                            color: 'rgba(0,0,0,0.7)',
+                            color: textColor,
                             fontFamily: 'Arial',
                             fontSize: 14,
                         },
@@ -340,7 +359,7 @@ export const PomodoroSankey = (props: Props) => {
     const { width = '100%' } = props;
     React.useEffect(() => {
         setOption(getOption(props));
-    }, [props.record]);
+    }, [props.record, props.themeName]);
     const onKeyDown = (keyname: string) => {
         switch (keyname) {
             case 'enter':
@@ -386,6 +405,7 @@ export const ConnectedPomodoroSankey = connect(
             ),
             record: state.timer.chosenRecord,
             boardName: board ? board.name : undefined,
+            themeName: state.timer.theme,
         };
     },
     (dispatch) => ({

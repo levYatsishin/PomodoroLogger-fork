@@ -24,29 +24,35 @@ export interface Props {
     title?: string;
 }
 
+const getCssVar = (name: string, fallback: string) => {
+    if (typeof document === 'undefined') {
+        return fallback;
+    }
+    const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    return v || fallback;
+};
+
 export const Badge = (props: Props) => {
     const { color = '#32d31f', type, value, title } = props;
+    const textColor = getCssVar('--pl-text', '#D4BE98');
+    const leftBg = getCssVar('--pl-card-muted', '#665C54');
+    const baseId = React.useMemo(shortid.generate, []);
     const textSize = Math.floor(props.type.length * 6.5 + 10);
     const timeSize = Math.floor(value.length * 6.5 + 10);
-    const idA = `${type.length},${value.length}a`;
-    const idB = `${type.length},${value.length}b`;
+    const idA = `${baseId}-a`;
+    const idB = `${baseId}-b`;
     return (
         <svg width={textSize + timeSize} height="20" style={{ margin: '1px 4px 1px 4px' }}>
             <title>{title}</title>
-            <linearGradient id={idB} x2="0" y2="100%">
-                <stop offset="0" stopColor="#bbb" stopOpacity=".1" />
-                <stop offset="1" stopOpacity=".1" />
-            </linearGradient>
             <clipPath id={idA}>
                 <rect width={textSize + timeSize} height="20" rx="3" fill="#fff" />
             </clipPath>
             <g clipPath={`url(#${idA})`}>
-                <path fill="#555" d={`M0 0h${textSize}v20H0z`} />
+                <path fill={leftBg} d={`M0 0h${textSize}v20H0z`} />
                 <path fill={color} d={`M${textSize} 0h${timeSize}v20H${textSize}z`} />
-                <path fill={`url(#${idB})`} d={`M0 0h${textSize + timeSize}v20H0z`} />
             </g>
             <g
-                fill="#fff"
+                fill={textColor}
                 textAnchor="middle"
                 fontFamily="DejaVu Sans,Verdana,Geneva,sans-serif"
                 fontSize="110"
@@ -54,38 +60,20 @@ export const Badge = (props: Props) => {
                 {/* tslint:disable-next-line:max-line-length */}
                 <text
                     x={(textSize / 2) * 10}
-                    y="150"
-                    fill="#010101"
-                    fillOpacity=".3"
-                    transform="scale(.1)"
-                    textLength={textSize * 10 - 100}
-                >
-                    {type}
-                </text>
-                <text
-                    x={(textSize / 2) * 10}
                     y="140"
                     transform="scale(.1)"
                     textLength={textSize * 10 - 100}
+                    style={{ paintOrder: 'fill', stroke: 'none', filter: 'none' }}
                 >
                     {type}
                 </text>
                 {/* tslint:disable-next-line:max-line-length */}
                 <text
-                    x={10 * textSize + timeSize * 5}
-                    y="150"
-                    fill="#010101"
-                    fillOpacity=".3"
-                    transform="scale(.1)"
-                    textLength={timeSize * 10 - 100}
-                >
-                    {value}
-                </text>
-                <text
                     x={textSize * 10 + timeSize * 5}
-                    y="140"
+                    y="142"
                     transform="scale(.1)"
                     textLength={timeSize * 10 - 100}
+                    style={{ paintOrder: 'fill', stroke: 'none', filter: 'none' }}
                 >
                     {value}
                 </text>
@@ -105,6 +93,10 @@ export const TimeBadge = React.memo((props: TimeBadgeProps) => {
     const [clipState, setClipState] = React.useState('default');
     const id = React.useMemo(shortid.generate, []);
     const id1 = id + '1';
+    const textColor = getCssVar('--pl-text', '#D4BE98');
+    const cardBg = getCssVar('--pl-card-bg', '#282828');
+    const barColor = '#b37e5b';
+    const leftBg = getCssVar('--pl-card-muted', '#665C54');
     let exceeded = false;
     let { spentTime = 0, leftTime = 0 } = props;
     if (leftTime < 0) {
@@ -186,7 +178,7 @@ export const TimeBadge = React.memo((props: TimeBadgeProps) => {
                         textLength={sSpentTime.length * 6.2}
                         textAnchor={'start'}
                         alignmentBaseline={'central'}
-                        fill={'black'}
+                        fill={textColor}
                     >
                         {sSpentTime}
                     </text>
@@ -210,7 +202,7 @@ export const TimeBadge = React.memo((props: TimeBadgeProps) => {
                         d={`M ${spentWidth} -10 L ${spentWidth} 30 L ${totalWidth * 2} 30 L ${
                             totalWidth * 2
                         } -10 Z`}
-                        fill={'white'}
+                        fill={cardBg}
                         transform={transform}
                     />
                 </clipPath>
@@ -218,21 +210,21 @@ export const TimeBadge = React.memo((props: TimeBadgeProps) => {
                     <path
                         className={'clip-path'}
                         d={`M -${totalWidth} -10 H ${spentWidth} V 40 L ${-totalWidth} 30 Z`}
-                        fill={'white'}
+                        fill={cardBg}
                         transform={transform}
                     />
                 </clipPath>
             </defs>
 
             <g clipPath={`url(#${id1})`}>
-                <rect height={20} width={totalWidth - 50} x={50} rx={3} fill={'#b37e5b'} />
+                <rect height={20} width={totalWidth - 50} x={50} rx={3} fill={barColor} />
                 <text
                     x={4}
                     y={10}
                     textLength={sSpentTime.length * 6.2}
                     textAnchor={'start'}
                     alignmentBaseline={'central'}
-                    fill={'black'}
+                    fill={textColor}
                 >
                     {sSpentTime}
                     <title>Spent Time</title>
@@ -245,7 +237,7 @@ export const TimeBadge = React.memo((props: TimeBadgeProps) => {
                     textLength={38}
                     textAnchor={'end'}
                     alignmentBaseline={'central'}
-                    fill={'white'}
+                    fill={textColor}
                 >
                     SPENT
                 </text>
@@ -257,7 +249,7 @@ export const TimeBadge = React.memo((props: TimeBadgeProps) => {
                     width={totalWidth - 50}
                     x={0}
                     rx={3}
-                    fill={exceeded ? '#740606' : '#ddd'}
+                    fill={exceeded ? '#EA6962' : leftBg}
                 />
                 <text
                     className={'label'}
@@ -266,7 +258,7 @@ export const TimeBadge = React.memo((props: TimeBadgeProps) => {
                     textLength={30 + (exceeded ? 8 : 0)}
                     textAnchor={'start'}
                     alignmentBaseline={'central'}
-                    fill={'white'}
+                    fill={textColor}
                 >
                     {exceeded ? 'EXTRA' : 'LEFT'}
                 </text>
@@ -276,7 +268,7 @@ export const TimeBadge = React.memo((props: TimeBadgeProps) => {
                     textLength={sEstimatedTime.length * 6.2}
                     textAnchor={'end'}
                     alignmentBaseline={'central'}
-                    fill={'black'}
+                    fill={textColor}
                 >
                     {sEstimatedTime}
                     <title>{exceeded ? 'Extra Time' : 'Left Time'}</title>

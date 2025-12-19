@@ -1,6 +1,14 @@
 import styled from 'styled-components';
 import * as React from 'react';
 
+const getCssVar = (name: string, fallback: string) => {
+    if (typeof document === 'undefined') {
+        return fallback;
+    }
+    const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    return v || fallback;
+};
+
 const Svg = styled.svg`
     user-select: none;
     transition: transform 0.2s;
@@ -29,6 +37,8 @@ function formatThousand(num: number) {
 
 export const PomodoroDot: React.FC<Props> = (props) => {
     const num = formatThousand(props.num);
+    const textColor = getCssVar('--pl-text', '#D4BE98');
+    const base = getCssVar('--pl-tag-bg', '#665C54');
     return (
         <Svg
             className="pomodoro-dot"
@@ -38,13 +48,13 @@ export const PomodoroDot: React.FC<Props> = (props) => {
             viewBox={'0 0 28 28'}
         >
             <title>{`${props.num} Pomodoros`}</title>
-            <circle cx={14} cy={14} r={14} fill={'#b3775b'} />
+            <circle cx={14} cy={14} r={14} fill={base} />
             <text
                 x={14}
                 y={14.5}
                 textAnchor={'middle'}
                 alignmentBaseline={'central'}
-                fill="rgba(0, 0, 0, 0.2)"
+                fill="rgba(0, 0, 0, 0.25)"
             >
                 {num}
             </text>
@@ -53,7 +63,7 @@ export const PomodoroDot: React.FC<Props> = (props) => {
                 y={13.5}
                 textAnchor={'middle'}
                 alignmentBaseline={'central'}
-                fill={'white'}
+                fill={textColor}
             >
                 {num}
             </text>

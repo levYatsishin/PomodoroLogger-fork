@@ -6,7 +6,7 @@ import { tuple } from 'antd/lib/_util/type';
 import Circle from 'antd/lib/progress/Circle';
 
 const ProgressTypes = tuple('line', 'circle', 'dashboard');
-export type ProgressType = (typeof ProgressTypes)[number];
+export type ProgressType = typeof ProgressTypes[number];
 const ProgressStatuses = tuple('normal', 'exception', 'active', 'success');
 export type ProgressSize = 'default' | 'small';
 export type StringGradients = { [percentage: string]: string };
@@ -19,7 +19,7 @@ export interface ProgressProps {
     percent?: number;
     successPercent?: number;
     format?: (percent?: number, successPercent?: number) => React.ReactNode;
-    status?: (typeof ProgressStatuses)[number];
+    status?: typeof ProgressStatuses[number];
     showInfo?: boolean;
     strokeWidth?: number;
     strokeLinecap?: 'butt' | 'square' | 'round';
@@ -38,10 +38,10 @@ export default class Progress extends React.Component<ProgressProps> {
         type: 'line',
         percent: 0,
         showInfo: true,
-        trailColor: '#f3f3f3',
+        trailColor: 'var(--pl-border)',
         size: 'default',
         gapDegree: 0,
-        strokeLinecap: 'round'
+        strokeLinecap: 'round',
     };
 
     static propTypes = {
@@ -55,7 +55,7 @@ export default class Progress extends React.Component<ProgressProps> {
         strokeColor: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
         trailColor: PropTypes.string,
         format: PropTypes.func,
-        gapDegree: PropTypes.number
+        gapDegree: PropTypes.number,
     };
 
     getPercentNumber() {
@@ -110,7 +110,7 @@ export default class Progress extends React.Component<ProgressProps> {
                 [`${prefixCls}-${(type === 'dashboard' && 'circle') || type}`]: true,
                 [`${prefixCls}-status-${progressStatus}`]: true,
                 [`${prefixCls}-show-info`]: showInfo,
-                [`${prefixCls}-${size}`]: size
+                [`${prefixCls}-${size}`]: size,
             },
             className
         );

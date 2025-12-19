@@ -27,16 +27,16 @@ const fadeIn = keyframes`
 
 const StyledSearch = styled.div<StyledProps>`
     font-size: 0.9rem;
-    background-color: white;
+    background-color: var(--pl-card-bg);
     margin: 0 4px;
     box-sizing: border-box;
     padding: 5px;
     height: 32px;
     border-radius: 16px;
     transition: width 200ms, padding 200ms;
-    border: 1px solid #dadada;
+    border: 1px solid var(--pl-border);
     outline: none;
-    color: #555;
+    color: var(--pl-text-muted);
     z-index: 5;
 
     ${({ isSearching }) =>
@@ -77,7 +77,7 @@ const StyledSearch = styled.div<StyledProps>`
             animation: ${fadeIn} 300ms ease;
 
             &:hover {
-                background-color: #d5d5d5;
+                background-color: var(--pl-surface-hover);
             }
         }
 
@@ -91,14 +91,15 @@ const StyledSearch = styled.div<StyledProps>`
             padding: 0;
             line-height: 20px;
             height: 20px;
+            color: var(--pl-text);
         }
     }
 
     :focus {
-        border: 1px solid #aaaaaa;
+        border: 1px solid var(--pl-border-strong);
     }
     :hover {
-        border: 1px solid #aba9a6;
+        border: 1px solid var(--pl-border-strong);
     }
 `;
 

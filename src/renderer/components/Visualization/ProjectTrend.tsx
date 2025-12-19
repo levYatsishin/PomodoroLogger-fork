@@ -18,7 +18,7 @@ const Container = styled.div`
     }
 
     h1 {
-        color: #0074e9;
+        color: var(--pl-accent);
         opacity: 0;
         transition: opacity 0.5s;
         text-align: center;

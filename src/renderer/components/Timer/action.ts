@@ -12,6 +12,7 @@ import { workers } from '../../workers';
 import { DEBUG_TIME_SCALE, __DEV__ } from '../../../config';
 import { AsyncDB } from '../../../utils/dbHelper';
 import { getNameFromBoardId } from '../../getNameFromBoardId';
+import { ThemeName } from '../../style/theme';
 
 export const LONG_BREAK_INTERVAL = 4;
 const settingDB = new AsyncDB(dbs.settingDB);
@@ -31,6 +32,7 @@ export interface Setting {
     startOnBoot: boolean;
     useHardwareAcceleration: boolean;
     distractingList: DistractingRow[];
+    theme: ThemeName;
 }
 
 export interface TimerManager {
@@ -77,6 +79,7 @@ export const defaultState: TimerState = {
     startOnBoot: false,
     useHardwareAcceleration: false,
     minimize: false,
+    theme: 'light',
 
     monitorInterval: 1000,
     screenShotInterval: undefined,
@@ -97,6 +100,7 @@ export const uiStateNames = [
     'boardId',
     'iBreak',
     'minimize',
+    'theme',
 ];
 
 export const startTimer = createActionCreator('[Timer]START_TIMER');
@@ -111,6 +115,10 @@ export const setMinimize = createActionCreator(
 export const setAutoUpdate = createActionCreator(
     '[Timer]SET_AUTO_UPDATE',
     (resolve) => (value: boolean) => resolve(value)
+);
+export const setTheme = createActionCreator(
+    '[Timer]SET_THEME',
+    (resolve) => (theme: ThemeName) => resolve(theme)
 );
 export const setTimerManager = createActionCreator(
     '[Timer]StartOrResumeTimer',
@@ -165,8 +173,9 @@ export const changeAppTab = createActionCreator(
     '[App]CHANGE_APP_TAB',
     (resolve) => (tab: tabType) => resolve(tab)
 );
-export const switchTab = createActionCreator('[App]SWITCH_TAB', (resolve) => (direction: 1 | -1) =>
-    resolve(direction)
+export const switchTab = createActionCreator(
+    '[App]SWITCH_TAB',
+    (resolve) => (direction: 1 | -1) => resolve(direction)
 );
 
 const throwError = (err: Error | null) => {
@@ -204,6 +213,7 @@ export const actions = {
             ['longBreakDuration', setLongBreakDuration],
             ['distractingList', setDistractingList],
             ['autoUpdate', setAutoUpdate],
+            ['theme', setTheme],
         ];
         for (const key of settingKeywords) {
             if (key[0] in settings) {
@@ -218,6 +228,15 @@ export const actions = {
         dbs.settingDB.update(
             { name: 'setting' },
             { $set: { autoUpdate: value } },
+            { upsert: true },
+            throwError
+        );
+    },
+    setTheme: (theme: ThemeName) => async (dispatch: Dispatch) => {
+        dispatch(setTheme(theme));
+        dbs.settingDB.update(
+            { name: 'setting' },
+            { $set: { theme } },
             { upsert: true },
             throwError
         );
@@ -298,25 +317,23 @@ export const actions = {
             throwError
         );
     },
-    timerFinished: (
-        sessionData?: PomodoroRecord,
-        cardIds: string[] = [],
-        boardId?: string | undefined
-    ) => async (dispatch: Dispatch) => {
-        dispatch(timerFinished());
-        dispatch(historyActions.setExpiringKey(new Date().toString()));
-        if (sessionData) {
-            await addSession(sessionData).catch((err) => console.error(err));
-            if (boardId !== undefined) {
-                await boardActions.onTimerFinished(
-                    boardId,
-                    sessionData._id,
-                    sessionData.spentTimeInHour,
-                    cardIds
-                )(dispatch);
+    timerFinished:
+        (sessionData?: PomodoroRecord, cardIds: string[] = [], boardId?: string | undefined) =>
+        async (dispatch: Dispatch) => {
+            dispatch(timerFinished());
+            dispatch(historyActions.setExpiringKey(new Date().toString()));
+            if (sessionData) {
+                await addSession(sessionData).catch((err) => console.error(err));
+                if (boardId !== undefined) {
+                    await boardActions.onTimerFinished(
+                        boardId,
+                        sessionData._id,
+                        sessionData.spentTimeInHour,
+                        cardIds
+                    )(dispatch);
+                }
             }
-        }
-    },
+        },
     /* istanbul ignore next */
     inferProject: (sessionData: PomodoroRecord) => async (dispatch: Dispatch) => {
         // Predict session's project
@@ -396,6 +413,10 @@ export const reducer = createReducer<TimerState, any>(defaultState, (handle) => 
     handle(setAutoUpdate, (state, { payload }) => ({
         ...state,
         autoUpdate: payload,
+    })),
+    handle(setTheme, (state, { payload }) => ({
+        ...state,
+        theme: payload,
     })),
     handle(setMonitorInterval, (state, { payload }) => ({ ...state, monitorInterval: payload })),
 

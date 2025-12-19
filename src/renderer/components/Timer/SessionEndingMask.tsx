@@ -21,14 +21,15 @@ const Mask = styled.div`
     height: 100%;
     width: 100%;
     position: fixed;
-    background-color: #dd5339;
+    background-color: var(--pl-surface);
     text-align: center;
-    color: white !important;
+    color: var(--pl-text) !important;
     z-index: 1000;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
+    box-shadow: inset 0 0 120px rgba(0, 0, 0, 0.25);
 `;
 
 const MaskInnerContainer = styled.div`
@@ -38,21 +39,21 @@ const MaskInnerContainer = styled.div`
 const ProjectName = styled.h1`
     font-size: 4em;
     transition: color 0.4s;
-    color: black;
+    color: var(--pl-text);
     cursor: pointer;
     line-height: 1em;
     margin: 0;
     :hover {
-        color: white;
+        color: var(--pl-card-bg);
     }
 `;
 
 const ListItem = styled.span`
     cursor: pointer;
-    color: #0074d9;
+    color: var(--pl-text);
     transition: color 0.3s;
     :hover {
-        color: #000088;
+        color: var(--pl-card-bg);
     }
 `;
 
@@ -92,12 +93,10 @@ const _TimerMask = (props: MaskProps) => {
         <List
             size="small"
             bordered={true}
-            dataSource={Object.values(boards).map(b => b.name)}
+            dataSource={Object.values(boards).map((b) => b.name)}
             renderItem={renderItem}
         />
-    ) : (
-        undefined
-    );
+    ) : undefined;
 
     const onProjectClick = (event: React.MouseEvent) => {
         event.stopPropagation();
@@ -137,7 +136,13 @@ const _TimerMask = (props: MaskProps) => {
                     ) : (
                         <ProjectName>Break</ProjectName>
                     )}
-                    <h1 style={{ color: 'white', fontSize: '3.5em', marginBottom: '1em' }}>
+                    <h1
+                        style={{
+                            color: 'var(--pl-text)',
+                            fontSize: '3.5em',
+                            marginBottom: '1em',
+                        }}
+                    >
                         Session Finished
                     </h1>
                 </Row>
@@ -150,10 +155,10 @@ const _TimerMask = (props: MaskProps) => {
                         : ' Short Break'}
                 </Button>
                 <Row style={{ marginTop: '2em' }}>
-                    <h1 style={{ color: 'white' }}>Today Pomodoros</h1>
+                    <h1 style={{ color: 'var(--pl-text)' }}>Today Pomodoros</h1>
                     <PomodoroNumView
                         pomodoros={props.pomodoros}
-                        color={'#f9ec52'}
+                        color={'red'}
                         showNum={false}
                         newPomodoro={props.newPomodoro}
                     />
@@ -168,9 +173,7 @@ const _TimerMask = (props: MaskProps) => {
                         +10
                     </Button>
                 </ButtonContainer>
-            ) : (
-                undefined
-            )}
+            ) : undefined}
         </Mask>
     );
 };
@@ -180,9 +183,9 @@ export const TimerMask = connect(
         isFocusing: state.timer.isFocusing,
         isLongBreak: !((state.timer.iBreak + 1) % LONG_BREAK_INTERVAL),
         boardId: state.timer.boardId,
-        boards: state.kanban.boards
+        boards: state.kanban.boards,
     }),
     (dispatch: Dispatch) => ({
-        setBoard: (_id?: string) => dispatch(actions.setBoardId(_id))
+        setBoard: (_id?: string) => dispatch(actions.setBoardId(_id)),
     })
 )(_TimerMask);

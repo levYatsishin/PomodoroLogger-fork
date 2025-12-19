@@ -16,7 +16,7 @@ const Container = styled.div`
     padding: 4px;
     margin: 6px;
     border-radius: 6px;
-    background-color: rgb(254, 254, 254);
+    background-color: var(--pl-card-bg);
 `;
 
 const ListHead = styled.div`
@@ -24,7 +24,7 @@ const ListHead = styled.div`
     height: 4em;
     min-width: 250px;
     padding: 4px 12px;
-    background-color: rgb(254, 254, 254);
+    background-color: var(--pl-card-bg);
     border-radius: 6px;
     position: relative;
 
@@ -50,7 +50,7 @@ const ListHead = styled.div`
     }
 
     .list-head-icon i:hover {
-        color: #0074d9;
+        color: var(--pl-accent);
     }
 `;
 
@@ -63,8 +63,8 @@ const BeforePlaceHolder = styled.div`
     height: 0.6rem;
     margin-bottom: 10px;
     background: linear-gradient(
-        rgba(222, 222, 222, 1),
-        rgba(222, 222, 222, 0.001)
+        var(--pl-list-fade),
+        var(--pl-list-fade-soft)
     ); /* transparent keyword is broken in Safari */
     pointer-events: none;
     z-index: 1;
@@ -79,8 +79,8 @@ const AfterPlaceHolder = styled.div`
     width: 100%;
     height: 0.6rem;
     background: linear-gradient(
-        rgba(222, 222, 222, 0.001),
-        rgba(222, 222, 222, 1)
+        var(--pl-list-fade-soft),
+        var(--pl-list-fade)
     ); /* transparent keyword is broken in Safari */
     pointer-events: none;
     z-index: 1;
@@ -93,7 +93,7 @@ interface CardsProps {
 const displayScrollbarFn = ({ displayScrollbar }: CardsProps) => {
     if (displayScrollbar) {
         return `
-            color: rgba(0, 0, 0, 0.2);
+            color: var(--pl-scrollbar-thumb);
             transition: color 250ms;
         `;
     }
@@ -107,7 +107,7 @@ const displayScrollbarFn = ({ displayScrollbar }: CardsProps) => {
 const Cards = styled.div<CardsProps>`
     position: relative;
     padding: 0;
-    background-color: #dedede;
+    background-color: var(--pl-surface-alt);
     border-radius: 4px;
     max-height: calc(100vh - 230px);
     overflow-y: overlay;
@@ -115,7 +115,7 @@ const Cards = styled.div<CardsProps>`
     min-height: 200px;
     max-width: 270px;
     & > * {
-        color: black;
+        color: var(--pl-text);
     }
 
     ${displayScrollbarFn} ::-webkit-scrollbar {
@@ -335,7 +335,7 @@ export const List: FC<Props> = React.memo((props: Props) => {
                                     <div className="list-head-icon">
                                         {focused ? (
                                             <Tooltip title={'Focused List'}>
-                                                <span style={{ color: 'red', marginRight: 8 }}>
+                                                <span style={{ color: '#EA6962', marginRight: 8 }}>
                                                     <Icon component={FocusIcon} />
                                                 </span>
                                             </Tooltip>

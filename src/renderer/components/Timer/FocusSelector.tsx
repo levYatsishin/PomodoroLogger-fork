@@ -20,7 +20,7 @@ const mFocusSelector: FunctionComponent<Props> = (props: Props) => {
         props.setId(value);
     };
 
-    const options = Object.values(props.kanban.boards).map(v => (
+    const options = Object.values(props.kanban.boards).map((v) => (
         <Option key={v._id} value={v._id} className="focus-option">
             {v.name}
         </Option>
@@ -28,7 +28,7 @@ const mFocusSelector: FunctionComponent<Props> = (props: Props) => {
 
     let style: any = {
         minWidth: 100,
-        width: '100%'
+        width: '100%',
     };
 
     if (props.width) {
@@ -42,12 +42,13 @@ const mFocusSelector: FunctionComponent<Props> = (props: Props) => {
             placeholder="Choose Your Focus"
             onChange={onChange}
             id="focus-selector"
+            dropdownMatchSelectWidth={false}
         >
             {options}
             <Option
                 key="undefined"
                 value={undefined}
-                style={{ color: '#bfbfbf' }}
+                style={{ color: 'var(--pl-text-muted)' }}
                 className="focus-option"
             >
                 No Focusing Project
@@ -59,9 +60,9 @@ const mFocusSelector: FunctionComponent<Props> = (props: Props) => {
 export const FocusSelector = connect(
     (state: RootState) => ({
         chosenId: state.timer.boardId,
-        kanban: state.kanban
+        kanban: state.kanban,
     }),
     (dispatch: Dispatch) => ({
-        setId: (id?: string) => dispatch(timerActions.setBoardId(id))
+        setId: (id?: string) => dispatch(timerActions.setBoardId(id)),
     })
 )(mFocusSelector);

@@ -10,7 +10,7 @@ import {
     startTimer,
     stopTimer,
     timerFinished,
-    TimerState
+    TimerState,
 } from './action';
 import { generateRandomName } from '../../utils';
 import { getAllSession } from '../../monitor/sessionManager';
@@ -88,6 +88,8 @@ describe('Reducer', () => {
         expect(state.focusDuration).toBe(9018);
         await actions.setRestDuration(9991)(dispatch);
         expect(state.restDuration).toBe(9991);
+        await actions.setTheme('dark')(dispatch);
+        expect(state.theme).toBe('dark');
         await actions.setLongBreakDuration(99991)(dispatch);
         expect(state.longBreakDuration).toBe(99991);
         await actions.setScreenShotInterval(91111)(dispatch);
@@ -98,7 +100,7 @@ describe('Reducer', () => {
         const leftTime = state.targetTime! - new Date().getTime();
         await dispatch(actions.stopTimer());
         expect(state.isRunning).toBeFalsy();
-        await new Promise(r => setTimeout(r, 1000));
+        await new Promise((r) => setTimeout(r, 1000));
         const targetTime = new Date().getTime() + leftTime;
         await dispatch(actions.continueTimer());
         expect(state.isRunning).toBeTruthy();
@@ -116,7 +118,8 @@ describe('Reducer', () => {
             'monitorInterval',
             'screenShotInterval',
             'startOnBoot',
-            'longBreakDuration'
+            'longBreakDuration',
+            'theme',
         ];
         for (const setting of settings) {
             // @ts-ignore
@@ -144,19 +147,19 @@ describe('On timerFinished', () => {
                     spentTimeInHour: 10,
                     appName: 'Chrome',
                     screenStaticDuration: 5,
-                    titleSpentTime: {}
-                }
+                    titleSpentTime: {},
+                },
             },
             screenStaticDuration: 5,
-            switchTimes: 3
+            switchTimes: 3,
         };
 
         const thunk = actions.timerFinished(record);
-        await thunk(x => {
+        await thunk((x) => {
             return x;
         });
         const sessions = await getAllSession();
-        const found = sessions.find(v => v.startTime === record.startTime);
+        const found = sessions.find((v) => v.startTime === record.startTime);
         expect(found).not.toBeUndefined();
     });
 });

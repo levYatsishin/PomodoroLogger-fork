@@ -17,8 +17,8 @@ export const Markdown = styled.div`
         width: 100%;
         height: 0.4rem;
         background: linear-gradient(
-            rgba(255, 255, 255, 1),
-            rgba(255, 255, 255, 0.001)
+            var(--pl-card-bg),
+            var(--pl-card-fade)
         ); /* transparent keyword is broken in Safari */
         pointer-events: none;
     }
@@ -31,8 +31,8 @@ export const Markdown = styled.div`
         width: 100%;
         height: 0.4rem;
         background: linear-gradient(
-            rgba(255, 255, 255, 0.001),
-            rgba(255, 255, 255, 1)
+            var(--pl-card-fade),
+            var(--pl-card-bg)
         ); /* transparent keyword is broken in Safari */
         pointer-events: none;
     }
@@ -42,8 +42,8 @@ export const Markdown = styled.div`
         border-radius: 1em;
         padding: 2px 0.5em;
         cursor: pointer;
-        background-color: #98989869;
-        color: #222;
+        background-color: var(--pl-tag-bg);
+        color: var(--pl-tag-text);
         margin: 0px 2px;
         line-height: 1.8;
         &:hover {
@@ -89,7 +89,7 @@ export const Markdown = styled.div`
     }
 
     .search-highlight {
-        background-color: rgba(208, 227, 66, 1);
+        background-color: var(--pl-highlight);
     }
 
     input {
